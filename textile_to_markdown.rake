@@ -1,5 +1,6 @@
 # Conversion methods originally authored by Joji Jorge Senda (d3j)
 # https://gist.github.com/d3j/95924df9fccc4d381d75/, thank you!
+# encoding: utf-8
 
 namespace :redmine do
   desc 'Syntax conversion from textile to markdown'
@@ -26,17 +27,17 @@ namespace :redmine do
             next
           end
 
-          s.gsub!(/(^|\s)\*([^\s\*].*?)\*(\s|$)/s, " **\\2** ")
-          s.gsub!(/(^|\s)@([^\s].*?)@(\s|$)/s, " `\\2` ")
+          s.gsub!(/(^|\s)\*([^\s\*].*?)\*(\s|$)/, " **\\2** ")
+          s.gsub!(/(^|\s)@([^\s].*?)@(\s|$)/, " `\\2` ")
           # convert strike through but protecting horizontal lines (----)
-          s.gsub!(/(^|\s)-([^\s-].*?)-(\s|$)/s, " ~~\\2~~ ")
-          s.gsub!(/"(.*?)":(.*?)\.html/s, " [\\1](\\2.html) ")
+          s.gsub!(/(^|\s)-([^\s-].*?)-(\s|$)/, " ~~\\2~~ ")
+          s.gsub!(/"(.*?)":(.*?)\.html/, " [\\1](\\2.html) ")
           # Bullet lists
-          s.gsub!(/^([\*]+)( .*)/s){ |s| "  " * ($1.length - 1) + "*" + $2}
+          s.gsub!(/^([\*]+)( .*)/){ |s| "  " * ($1.length - 1) + "*" + $2}
           # Numbered lists
-          s.gsub!(/^([\#]+)( .*)/s){ |s| "  " * ($1.length - 1)  + "1." + $2}
+          s.gsub!(/^([\#]+)( .*)/){ |s| "  " * ($1.length - 1)  + "1." + $2}
           # external links
-          s.gsub!(/"(.*)":([^\s]*)/s){ |s| "[#{$1}](#{$2})"}
+          s.gsub!(/"(.*)":([^\s]*)/){ |s| "[#{$1}](#{$2})"}
 
           d << ""  if text_line
           text_line = false
