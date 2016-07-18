@@ -36,6 +36,8 @@ namespace :redmine do
           s.gsub!(/^([\*]+)( .*)/){ |s| "  " * ($1.length - 1) + "*" + $2}
           # Numbered lists
           s.gsub!(/^([\#]+)( .*)/){ |s| "  " * ($1.length - 1)  + "1." + $2}
+          # external links with formatting
+          s.gsub!(/([\*_\-@\+]{1,2})"(.*)":([^\s]*)\1/){ |s| "[#{$1}#{$2}#{$1}](#{$3})"}
           # external links
           s.gsub!(/"(.*)":([^\s]*)/){ |s| "[#{$1}](#{$2})"}
 
