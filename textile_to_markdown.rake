@@ -26,15 +26,17 @@ namespace :redmine do
             next
           end
 
-          s.gsub!(/(^|\s)\*([^\s\*].*?)\*(\s|$)/, " **\\2** ")
-          s.gsub!(/(^|\s)@([^\s].*?)@(\s|$)/, " `\\2` ")
+          s.gsub!(/(^|\s)\*([^\s\*].*?)\*(\s|$)/s, " **\\2** ")
+          s.gsub!(/(^|\s)@([^\s].*?)@(\s|$)/s, " `\\2` ")
           # convert strike through but protecting horizontal lines (----)
-          s.gsub!(/(^|\s)-([^\s-].*?)-(\s|$)/, " ~~\\2~~ ")
-          s.gsub!(/"(.*?)":(.*?)\.html/, " [\\1](\\2.html) ")
+          s.gsub!(/(^|\s)-([^\s-].*?)-(\s|$)/s, " ~~\\2~~ ")
+          s.gsub!(/"(.*?)":(.*?)\.html/s, " [\\1](\\2.html) ")
           # Bullet lists
-          s.gsub!(/^([\*]+)( .*)/){ |s| "  " * ($1.length - 1) + "*" + $2}
+          s.gsub!(/^([\*]+)( .*)/s){ |s| "  " * ($1.length - 1) + "*" + $2}
           # Numbered lists
-          s.gsub!(/^([\#]+)( .*)/){ |s| "  " * ($1.length - 1)  + "#" + $2}
+          s.gsub!(/^([\#]+)( .*)/s){ |s| "  " * ($1.length - 1)  + "1." + $2}
+          # external links
+          s.gsub!(/"(.*)":([^\s]*)/s){ |s| "[#{$1}](#{$2})"}
 
           d << ""  if text_line
           text_line = false
@@ -93,16 +95,24 @@ namespace :redmine do
         # update_content(Issue, :description, "id = 1784")convert
       end
 
-      old_notified_events = Setting.notified_events
-      begin
-        # Turn off email notifications temporarily
-        Setting.notified_events = []
-        # Run the conversion
-        MarkdownConverter.convert
-      ensure
-        # Restore previous settings
-        Setting.notified_events = old_notified_events
+      debug = true
+      if !debug
+        old_notified_events = Setting.notified_events
+        begin
+          # Turn off email notifications temporarily
+          Setting.notified_events = []
+            # Run the conversion
+            #MarkdownConverter.convert
+        ensure
+          # Restore previous settings
+          Setting.notified_events = old_notified_events
+        end
+      else
+        # Debugging
+        contents = File.read('example.md')
+        puts textile_to_markdown(contents)
       end
+
 
     end # END module MarkdownConverter
 
