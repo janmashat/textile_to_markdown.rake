@@ -95,24 +95,16 @@ namespace :redmine do
         # update_content(Issue, :description, "id = 1784")convert
       end
 
-      debug = true
-      if !debug
-        old_notified_events = Setting.notified_events
-        begin
-          # Turn off email notifications temporarily
-          Setting.notified_events = []
-            # Run the conversion
-            #MarkdownConverter.convert
-        ensure
-          # Restore previous settings
-          Setting.notified_events = old_notified_events
-        end
-      else
-        # Debugging
-        contents = File.read('example.md')
-        puts textile_to_markdown(contents)
+      old_notified_events = Setting.notified_events
+      begin
+        # Turn off email notifications temporarily
+        Setting.notified_events = []
+          # Run the conversion
+          MarkdownConverter.convert
+      ensure
+        # Restore previous settings
+        Setting.notified_events = old_notified_events
       end
-
 
     end # END module MarkdownConverter
 
