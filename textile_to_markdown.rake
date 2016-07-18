@@ -5,9 +5,9 @@ namespace :redmine do
   desc 'Syntax conversion from textile to markdown'
   task :textile_to_markdown => :environment do
 
-    module MarkdownConverter
+    module Textile2Markdown
 
-      def textile_to_markdown(textile)
+      def self.textile_to_markdown(textile)
         d = []
         pre = false
         table_header = false
@@ -68,7 +68,7 @@ namespace :redmine do
       end # END textile_to_markdown
 
 
-      def update_content(model, attribute, where)
+      def self.update_content(model, attribute, where)
         total = model.where("#{where}").count
         model.where("#{where}").each_with_index do |rec, ix|
           if !rec[attribute].empty? then
@@ -86,7 +86,7 @@ namespace :redmine do
         end
       end
 
-      def convert
+      def self.convert
         update_content(WikiContent, :text, 1)
         update_content(Issue, :description, 1)
         update_content(Journal, :notes, 1)
@@ -100,13 +100,13 @@ namespace :redmine do
         # Turn off email notifications temporarily
         Setting.notified_events = []
           # Run the conversion
-          MarkdownConverter.convert
+        Textile2Markdown.convert
       ensure
         # Restore previous settings
         Setting.notified_events = old_notified_events
       end
 
-    end # END module MarkdownConverter
+    end # END module Textile2Markdown
 
   end
 end
