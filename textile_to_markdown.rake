@@ -78,7 +78,10 @@ namespace :redmine do
             markdowned = textile_to_markdown(rec[attribute])
             if markdowned != rec[attribute] then
               puts "++++++ #{model}.#{attribute} : #{rec[:id]} : #{ix+1} / #{total} ++++++"
-              rec.update_column(:"#{attribute}", markdowned); rec.save!
+              rec.update_column(:"#{attribute}", markdowned);
+              # update_column already persists the change to the db, an additional save! would
+              # set the updated_on tiemstamp to NOW which not not always wanted.
+              # rec.save! # DISABLED
 #        print markdowned
             else
               puts "====== #{model}.#{attribute} : #{rec[:id]} : #{ix+1} / #{total} ======"
