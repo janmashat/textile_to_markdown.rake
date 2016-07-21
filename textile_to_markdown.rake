@@ -76,6 +76,7 @@ namespace :redmine do
         model.where("#{where}").each_with_index do |rec, ix|
           if !rec[attribute].empty? then
             markdowned = textile_to_markdown(rec[attribute])
+            markdowned = cleanup_md(markdowned, model)
             if markdowned != rec[attribute] then
               puts "++++++ #{model}.#{attribute} : #{rec[:id]} : #{ix+1} / #{total} ++++++"
               rec.update_column(:"#{attribute}", markdowned);
@@ -99,6 +100,17 @@ namespace :redmine do
 
         # update_content(Issue, :description, "updated_on < '2015/10/04'")
         # update_content(Issue, :description, "id = 1784")convert
+      end
+
+      # Optional clean up of the converted markdown
+      #
+      # Add you own rules here
+      def self.cleanup_md(markdown, model)
+        if model == WikiContent
+          markdown.gsub!(/\[\[TracNav\(NavigationMenu\)\]\]/, '')
+        end
+
+        markdown
       end
 
       old_notified_events = Setting.notified_events
