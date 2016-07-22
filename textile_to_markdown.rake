@@ -81,15 +81,29 @@ namespace :redmine do
               puts "++++++ #{model}.#{attribute} : #{rec[:id]} : #{ix+1} / #{total} ++++++"
               rec.update_column(:"#{attribute}", markdowned);
               # update_column already persists the change to the db, an additional save! would
-              # set the updated_on tiemstamp to NOW which not not always wanted.
+              # set the updated_on timestamp to NOW which not not always wanted.
               # rec.save! # DISABLED
 #        print markdowned
             else
               puts "====== #{model}.#{attribute} : #{rec[:id]} : #{ix+1} / #{total} ======"
             end
+            if model == WikiContent
+              update_wiki_versions(rec)
+            end
           else
             puts "------ #{model}.#{attribute} : #{rec[:id]} : #{ix+1} / #{total} ------"
           end
+        end
+      end
+
+      def self.update_wiki_versions(wiki_content)
+        wiki_content.versions.each do |version|
+          last_updated_on =  version.updated_on
+          markdowned = textile_to_markdown(version.text)
+          version.text = cleanup_md(markdowned, WikiContent)
+          version.save
+          # reset timestamp
+          version.update_column(:updated_on, last_updated_on)
         end
       end
 
