@@ -111,6 +111,8 @@ namespace :redmine do
         update_content(WikiContent, :text, 1)
         update_content(Issue, :description, 1)
         update_content(Journal, :notes, 1)
+        update_content(News, :summary, 1)
+        update_content(News, :description, 1)
 
         # update_content(Issue, :description, "updated_on < '2015/10/04'")
         # update_content(Issue, :description, "id = 1784")convert
